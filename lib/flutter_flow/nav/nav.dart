@@ -94,6 +94,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
           name: 'onboarding',
           path: '/onboarding',
           builder: (context, params) => const OnboardingWidget(),
+        ),
+        FFRoute(
+          name: 'completed',
+          path: '/completed',
+          builder: (context, params) => const CompletedWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
