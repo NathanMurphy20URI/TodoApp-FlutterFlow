@@ -34,6 +34,8 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
 
     _model.detailsTextController ??= TextEditingController();
     _model.detailsFocusNode ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -145,6 +147,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                 ),
                 style: FlutterFlowTheme.of(context).labelLarge.override(
                       fontFamily: 'Inter',
+                      color: const Color(0x8022292F),
                       letterSpacing: 0.0,
                     ),
                 cursorColor: FlutterFlowTheme.of(context).primaryText,
@@ -205,6 +208,7 @@ class _AddTaskWidgetState extends State<AddTaskWidget> {
                 ),
                 style: FlutterFlowTheme.of(context).labelLarge.override(
                       fontFamily: 'Inter',
+                      color: const Color(0x8022292F),
                       letterSpacing: 0.0,
                     ),
                 maxLines: null,
