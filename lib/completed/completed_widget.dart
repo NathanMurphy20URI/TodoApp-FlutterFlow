@@ -24,6 +24,8 @@ class _CompletedWidgetState extends State<CompletedWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => CompletedModel());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -77,6 +79,25 @@ class _CompletedWidgetState extends State<CompletedWidget> {
             ),
           ),
         ),
+        appBar: AppBar(
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          automaticallyImplyLeading: false,
+          title: Text(
+            valueOrDefault<String>(
+              dateTimeFormat("jm", getCurrentTimestamp),
+              '12:00PM',
+            ),
+            style: FlutterFlowTheme.of(context).headlineMedium.override(
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                  fontSize: 22.0,
+                  letterSpacing: 0.0,
+                ),
+          ),
+          actions: const [],
+          centerTitle: false,
+          elevation: 2.0,
+        ),
         body: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 24.0),
           child: Column(
@@ -86,7 +107,7 @@ class _CompletedWidgetState extends State<CompletedWidget> {
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(24.0, 0.0, 24.0, 0.0),
                 child: Text(
-                  'Tasks',
+                  'Completed',
                   style: FlutterFlowTheme.of(context).headlineMedium.override(
                         fontFamily: 'Inter',
                         letterSpacing: 0.0,
@@ -103,7 +124,7 @@ class _CompletedWidgetState extends State<CompletedWidget> {
                         )
                         .where(
                           'completed',
-                          isEqualTo: false,
+                          isEqualTo: true,
                         ),
                   ),
                   builder: (context, snapshot) {
@@ -135,6 +156,12 @@ class _CompletedWidgetState extends State<CompletedWidget> {
                           key: Key(
                               'Keyytz_${listViewIndex}_of_${listViewTasksRecordList.length}'),
                           tasksDoc: listViewTasksRecord,
+                          checkAction: () async {
+                            await listViewTasksRecord.reference
+                                .update(createTasksRecordData(
+                              completed: false,
+                            ));
+                          },
                         );
                       },
                     );

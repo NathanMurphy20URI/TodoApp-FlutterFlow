@@ -4,7 +4,10 @@ import '/components/add_task_widget.dart';
 import '/components/task_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/instant_timer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'tasks_model.dart';
 export 'tasks_model.dart';
 
@@ -24,6 +27,20 @@ class _TasksWidgetState extends State<TasksWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => TasksModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      _model.instantTimer = InstantTimer.periodic(
+        duration: const Duration(milliseconds: 1000),
+        callback: (timer) async {
+          FFAppState().currentTime = getCurrentTimestamp;
+          safeSetState(() {});
+        },
+        startImmediately: true,
+      );
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -35,6 +52,8 @@ class _TasksWidgetState extends State<TasksWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -76,6 +95,25 @@ class _TasksWidgetState extends State<TasksWidget> {
               size: 30.0,
             ),
           ),
+        ),
+        appBar: AppBar(
+          backgroundColor: FlutterFlowTheme.of(context).primary,
+          automaticallyImplyLeading: false,
+          title: Text(
+            valueOrDefault<String>(
+              dateTimeFormat("jm", getCurrentTimestamp),
+              '12:00PM',
+            ),
+            style: FlutterFlowTheme.of(context).headlineMedium.override(
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                  fontSize: 22.0,
+                  letterSpacing: 0.0,
+                ),
+          ),
+          actions: const [],
+          centerTitle: false,
+          elevation: 2.0,
         ),
         body: Padding(
           padding: const EdgeInsetsDirectional.fromSTEB(0.0, 24.0, 0.0, 24.0),
@@ -131,10 +169,36 @@ class _TasksWidgetState extends State<TasksWidget> {
                       itemBuilder: (context, listViewIndex) {
                         final listViewTasksRecord =
                             listViewTasksRecordList[listViewIndex];
-                        return TaskWidget(
-                          key: Key(
-                              'Keykrs_${listViewIndex}_of_${listViewTasksRecordList.length}'),
-                          tasksDoc: listViewTasksRecord,
+                        return InkWell(
+                          splashColor: Colors.transparent,
+                          focusColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          onTap: () async {
+                            context.pushNamed(
+                              'details',
+                              queryParameters: {
+                                'taskDoc': serializeParam(
+                                  listViewTasksRecord,
+                                  ParamType.Document,
+                                ),
+                              }.withoutNulls,
+                              extra: <String, dynamic>{
+                                'taskDoc': listViewTasksRecord,
+                              },
+                            );
+                          },
+                          child: TaskWidget(
+                            key: Key(
+                                'Keykrs_${listViewIndex}_of_${listViewTasksRecordList.length}'),
+                            tasksDoc: listViewTasksRecord,
+                            checkAction: () async {
+                              await listViewTasksRecord.reference
+                                  .update(createTasksRecordData(
+                                completed: true,
+                              ));
+                            },
+                          ),
                         );
                       },
                     );

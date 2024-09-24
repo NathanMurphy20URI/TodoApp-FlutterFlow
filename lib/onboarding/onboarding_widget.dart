@@ -30,6 +30,8 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
 
     _model.nameTextController ??= TextEditingController();
     _model.nameFocusNode ??= FocusNode();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -257,6 +259,7 @@ class _OnboardingWidgetState extends State<OnboardingWidget> {
                           style:
                               FlutterFlowTheme.of(context).labelLarge.override(
                                     fontFamily: 'Inter',
+                                    color: const Color(0x8022292F),
                                     letterSpacing: 0.0,
                                   ),
                           keyboardType: TextInputType.name,
